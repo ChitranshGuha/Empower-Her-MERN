@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ message: 'Method not allowed' });
 
-  const { phone, password, role } = req.body;
+  const { name, phone, password, role } = req.body;
 
   if (!phone || !password || !role) {
     return res.status(400).json({ message: 'Phone, password, and role are required' });
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
+      name,
       phone,
       password: hashedPassword,
       role

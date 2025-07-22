@@ -1,12 +1,13 @@
-import React from 'react';
-import Link from 'next/link';
-import { useUser } from '../context/UserContext';
+import React from "react";
+import Link from "next/link";
+import { useUser } from "../context/UserContext";
 import Image from "next/image";
-import { Playfair_Display } from 'next/font/google';
-import AuthForm from '@/pages/AuthForm';
+import { Playfair_Display } from "next/font/google";
+import Head from "next/head";
+import { useRouter } from "next/router";
 const playfair = Playfair_Display({
-  subsets: ['latin'],
-  weight: '700', // or '400', '600', etc.
+  subsets: ["latin"],
+  weight: "700",
 });
 
 function NavBar() {
@@ -15,43 +16,107 @@ function NavBar() {
   const renderActionButton = () => {
     if (!user) return null;
 
-    if (user.role === 'job-seeker') {
-      return <Link href="/find-jobs" className="nav-link">Find Jobs</Link>;
+    if (user.role === "job-seeker") {
+      return (
+        <>
+          <Link
+          href="/find-jobs"
+          className="nav-link btn btn-dark text-white px-4 mx-1"
+          style={{ borderRadius: "20px", backgroundColor: "black" }}
+        >
+          Find Jobs
+        </Link>
+        <Link
+          href="/applied-jobs"
+          className="nav-link btn btn-dark text-white px-4 mx-1"
+          style={{ borderRadius: "20px", backgroundColor: "black" }}
+        >
+          Applied Jobs
+        </Link>
+        </>
+      );
     }
 
-    if (user.role === 'job-provider') {
-      return <Link href="/post-job" className="nav-link">Post Job</Link>;
+    if (user.role === "job-provider") {
+      return (
+        <>
+        <Link
+          href="/posted-job"
+          className="nav-link btn btn-dark text-white px-4 mx-1"
+          style={{ borderRadius: "20px", backgroundColor: "black" }}
+        >
+          Posted Job
+        </Link>
+        <Link
+          href="/post-job"
+          className="nav-link btn btn-dark text-white px-4 mx-1"
+          style={{ borderRadius: "20px", backgroundColor: "black" }}
+        >
+          Post Job
+        </Link>
+        </>
+      );
     }
-
     return null;
   };
+  const router = useRouter();
+  const { setUser } = useUser();
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    router.push("/AuthForm?mode=login");
+  };
+
 
   return (
-    <nav style={{backgroundColor: "#a6f3ff"}} className="navbar navbar-expand-lg">
-      <Link href="/" className="navbar-brand ml-2"><Image 
-          src="/images/mainlogo1.png" 
-          alt="Company Logo" 
-          width={50} 
-          height={50} 
+    <nav
+      style={{ backgroundColor: "#a6f3ff" }}
+      className="navbar navbar-expand-lg"
+    >
+      <Head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
         />
-        <span className={`ml-2 ${playfair.className}`} style={{ color: "#333", fontSize: "25px" }}>Empower Her</span></Link>
+      </Head>
+
+      <Link href="/" className="navbar-brand ml-2 d-flex align-items-center">
+        <Image
+          src="/images/mainlogo1.png"
+          alt="Company Logo"
+          width={50}
+          height={50}
+        />
+        <span
+          className={`ml-2 ${playfair.className}`}
+          style={{ color: "#333", fontSize: "25px" }}
+        >
+          Empower Her
+        </span>
+      </Link>
+
       <div className="collapse navbar-collapse justify-content-end">
         <ul className="navbar-nav d-flex align-items-center">
           <li className="nav-item">
-            <Link href="/feedback" className="nav-link"><Image
+            <Link href="/feedback" className="nav-link">
+              <Image
                 src="/images/feedback.jpg"
-                alt="Feedback" 
-                width={45} 
-                height={45} 
-            /></Link>
+                alt="Feedback"
+                width={45}
+                height={45}
+              />
+            </Link>
           </li>
           <li className="nav-item">
-            <Link href="/notifications" className="nav-link"><Image
+            <Link href="/notifications" className="nav-link">
+              <Image
                 src="/images/bellicon.png"
-                alt="Feedback" 
-                width={45} 
-                height={45} 
-            /></Link>
+                alt="Notification"
+                width={45}
+                height={45}
+              />
+            </Link>
           </li>
 
           {renderActionButton()}
@@ -59,25 +124,78 @@ function NavBar() {
           {!user ? (
             <>
               <li className="nav-item">
-                <Link href="/AuthForm?mode=login" className="nav-link btn btn-dark text-white px-4 mx-1" style={{ borderRadius: "20px" , backgroundColor: "black"}}>Login</Link>
+                <Link
+                  href="/AuthForm?mode=login"
+                  className="nav-link btn btn-dark text-white px-4 mx-1"
+                  style={{ borderRadius: "20px", backgroundColor: "black" }}
+                >
+                  Login
+                </Link>
               </li>
               <li className="nav-item">
-                <Link href="/AuthForm?mode=signup" className="nav-link btn btn-dark text-white px-4 mx-1" style={{ borderRadius: "20px" , backgroundColor: "black"}}>Sign Up</Link>
+                <Link
+                  href="/AuthForm?mode=signup"
+                  className="nav-link btn btn-dark text-white px-4 mx-1"
+                  style={{ borderRadius: "20px", backgroundColor: "black" }}
+                >
+                  Sign Up
+                </Link>
               </li>
             </>
           ) : (
             <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
-                <i className="fas fa-user"></i>
+              <a
+                className="nav-link dropdown-toggle d-flex align-items-center user-icon"
+                data-toggle="dropdown"
+                href="#"
+                style={{ cursor: "pointer" }}
+              >
+                {user.imageUrl ? (
+                  <Image
+                    src={user.imageUrl}
+                    alt="User Avatar"
+                    width={36}
+                    height={36}
+                    className="rounded-circle user-avatar"
+                  />
+                ) : (
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      fontSize: "32px",
+                      marginRight: "4px",
+                      transition: "transform 0.3s",
+                    }}
+                  >
+                    account_circle
+                  </span>
+                )}
               </a>
               <div className="dropdown-menu dropdown-menu-right">
-                <Link href="/profile" className="dropdown-item">Edit Profile</Link>
-                <Link href="/logout" className="dropdown-item">Logout</Link>
+                <Link href="/profile" className="dropdown-item">
+                  Edit Profile
+                </Link>
+                <button onClick={logout} className="dropdown-item">
+                  Logout
+                </button>
               </div>
             </li>
           )}
         </ul>
       </div>
+
+      <style jsx>{`
+        .user-icon:hover span {
+          transform: scale(1.2);
+          color: #000;
+        }
+        .user-avatar:hover {
+          transform: scale(1.1);
+        }
+        .user-avatar {
+          transition: transform 0.3s;
+        }
+      `}</style>
     </nav>
   );
 }

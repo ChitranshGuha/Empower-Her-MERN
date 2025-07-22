@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { User, Phone, Lock, Briefcase, UserCheck } from "lucide-react";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import { useUser } from "@/context/UserContext";
 function AuthForm() {
   const router = useRouter();
   const { mode } = router.query;
@@ -23,6 +24,8 @@ function AuthForm() {
     });
   };
 
+  const { setUser } = useUser(); // get setter
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,10 +45,11 @@ function AuthForm() {
       alert(data.message);
 
       if (isLogin) {
-        // Redirect to dashboard or homepage
+        localStorage.setItem("user", JSON.stringify(data.user)); 
+        setUser(data.user);
         router.push("/");
       } else {
-        toggleMode(); // switch to login
+        toggleMode();
       }
     } catch (err) {
       alert(err.message);

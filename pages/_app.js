@@ -1,6 +1,13 @@
+// pages/_app.js
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useEffect } from 'react';
 import { UserProvider } from '../context/UserContext';
 
-function MyApp({ Component, pageProps }) {
+function App({ Component, pageProps }) {
+  useEffect(() => {
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
+  }, []);
+
   return (
     <UserProvider>
       <Component {...pageProps} />
@@ -8,4 +15,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp;
+export default App;
