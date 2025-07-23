@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react"; // Import useCallback
 import Link from "next/link";
 import { useUser } from "../context/UserContext";
 import Image from "next/image";
 import { Playfair_Display } from "next/font/google";
 import Head from "next/head";
 import { useRouter } from "next/router";
+
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: "700",
@@ -12,6 +13,37 @@ const playfair = Playfair_Display({
 
 function NavBar() {
   const { user } = useUser();
+  const router = useRouter();
+  const { setUser } = useUser();
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0); // New state for unread count
+
+  // Function to fetch unread notification count
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user || !user._id) {
+      setUnreadNotificationsCount(0); // Reset if no user or user ID
+      return;
+    }
+    try {
+      const res = await fetch(`/api/notifications/unread/${user._id}`);
+      const data = await res.json();
+      if (res.ok) {
+        setUnreadNotificationsCount(data.count);
+      } else {
+        console.error('Failed to fetch unread notification count:', data.message);
+        setUnreadNotificationsCount(0);
+      }
+    } catch (err) {
+      console.error('Client-side error fetching unread count:', err);
+      setUnreadNotificationsCount(0);
+    }
+  }, [user]); // Dependency on user: re-fetch if user object changes
+
+  useEffect(() => {
+    fetchUnreadCount();
+    // Optional: Poll for new notifications periodically
+    const interval = setInterval(fetchUnreadCount, 15000); // Poll every 15 seconds
+    return () => clearInterval(interval); // Clean up interval on unmount
+  }, [fetchUnreadCount]); // Dependency on memoized fetchUnreadCount
 
   const renderActionButton = () => {
     if (!user) return null;
@@ -20,19 +52,19 @@ function NavBar() {
       return (
         <>
           <Link
-          href="/find-jobs"
-          className="nav-link btn btn-dark text-white px-4 mx-1"
-          style={{ borderRadius: "20px", backgroundColor: "black" }}
-        >
-          Find Jobs
-        </Link>
-        <Link
-          href="/applied-jobs"
-          className="nav-link btn btn-dark text-white px-4 mx-1"
-          style={{ borderRadius: "20px", backgroundColor: "black" }}
-        >
-          Applied Jobs
-        </Link>
+            href="/find-jobs"
+            className="nav-link btn btn-dark text-white px-4 mx-1"
+            style={{ borderRadius: "20px", backgroundColor: "black" }}
+          >
+            Find Jobs
+          </Link>
+          <Link
+            href="/applied-jobs"
+            className="nav-link btn btn-dark text-white px-4 mx-1"
+            style={{ borderRadius: "20px", backgroundColor: "black" }}
+          >
+            Applied Jobs
+          </Link>
         </>
       );
     }
@@ -40,27 +72,25 @@ function NavBar() {
     if (user.role === "job-provider") {
       return (
         <>
-        <Link
-          href="/posted-job"
-          className="nav-link btn btn-dark text-white px-4 mx-1"
-          style={{ borderRadius: "20px", backgroundColor: "black" }}
-        >
-          Posted Job
-        </Link>
-        <Link
-          href="/post-job"
-          className="nav-link btn btn-dark text-white px-4 mx-1"
-          style={{ borderRadius: "20px", backgroundColor: "black" }}
-        >
-          Post Job
-        </Link>
+          <Link
+            href="/posted-job"
+            className="nav-link btn btn-dark text-white px-4 mx-1"
+            style={{ borderRadius: "20px", backgroundColor: "black" }}
+          >
+            Posted Job
+          </Link>
+          <Link
+            href="/post-job"
+            className="nav-link btn btn-dark text-white px-4 mx-1"
+            style={{ borderRadius: "20px", backgroundColor: "black" }}
+          >
+            Post Job
+          </Link>
         </>
       );
     }
     return null;
   };
-  const router = useRouter();
-  const { setUser } = useUser();
 
   const logout = () => {
     localStorage.removeItem("user");
@@ -68,6 +98,7 @@ function NavBar() {
     router.push("/AuthForm?mode=login");
   };
 
+  const bellIconSrc = unreadNotificationsCount > 0 ? "/images/belliconUpdate.png" : "/images/bellicon.png";
 
   return (
     <nav
@@ -75,10 +106,13 @@ function NavBar() {
       className="navbar navbar-expand-lg"
     >
       <Head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-        />
+        {/*
+          IMPORTANT: Do not load stylesheets using next/head here.
+          If this is for Material Symbols Outlined, use @next/font/google in _app.js
+          or import the CSS globally in _app.js.
+          This line can cause warnings/errors as per previous discussions.
+        */}
+        {/* <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" /> */}
       </Head>
 
       <Link href="/" className="navbar-brand ml-2 d-flex align-items-center">
@@ -108,14 +142,20 @@ function NavBar() {
               />
             </Link>
           </li>
-          <li className="nav-item">
-            <Link href="/notifications" className="nav-link">
+          <li className="nav-item position-relative"> {/* Added position-relative for badge positioning */}
+            <Link href="/notification" className="nav-link">
               <Image
-                src="/images/bellicon.png"
+                src={bellIconSrc} // Use conditional source
                 alt="Notification"
                 width={45}
                 height={45}
               />
+              {unreadNotificationsCount > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {unreadNotificationsCount}
+                  <span className="visually-hidden">unread messages</span>
+                </span>
+              )}
             </Link>
           </li>
 
@@ -146,7 +186,7 @@ function NavBar() {
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle d-flex align-items-center user-icon"
-                data-toggle="dropdown"
+                data-toggle="dropdown" // Note: Bootstrap 5 uses data-bs-toggle="dropdown"
                 href="#"
                 style={{ cursor: "pointer" }}
               >
@@ -160,7 +200,7 @@ function NavBar() {
                   />
                 ) : (
                   <span
-                    className="material-symbols-outlined"
+                    className="material-symbols-outlined" // Ensure Material Symbols font is loaded globally (e.g., in _app.js)
                     style={{
                       fontSize: "32px",
                       marginRight: "4px",

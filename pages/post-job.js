@@ -1,4 +1,6 @@
-import { useState } from "react";
+// pages/post-job.js
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router"; // Import useRouter
 import {
   Briefcase,
   MapPin,
@@ -7,20 +9,80 @@ import {
   FileText,
   Building2,
   Sparkles,
+  Edit2 // Icon for edit mode
 } from "lucide-react";
 import NavBar from "@/components/NavBar";
 import { useUser } from "@/context/UserContext";
 import Head from "next/head";
+
 export default function PostJobPage() {
+  const router = useRouter(); // Initialize router
+  const { edit: jobIdToEdit } = router.query; // Get the jobId from the query parameter
+  const { user } = useUser();
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     location: "",
+    city: "", // Ensure city is in initial state
     salary: "",
     deadline: "",
+    // jobType: "Full-time", // If you decide to re-add jobType later
   });
   const [loading, setLoading] = useState(false);
-  const { user } = useUser();
+  const [isEditing, setIsEditing] = useState(false); // New state to track edit mode
+  const [initialLoadError, setInitialLoadError] = useState(null); // For errors during initial job data fetch
+
+  // Effect to fetch job data if in edit mode
+  useEffect(() => {
+    if (jobIdToEdit) {
+      setIsEditing(true);
+      setLoading(true); // Set loading for initial data fetch
+
+      async function fetchJobData() {
+        try {
+          const res = await fetch(`/api/jobs/${jobIdToEdit}`); // Call API to get job details
+          const data = await res.json();
+
+          if (res.ok) {
+            const jobData = data.data;
+            setFormData({
+              title: jobData.title || "",
+              description: jobData.description || "",
+              location: jobData.location || "",
+              city: jobData.city || "",
+              salary: jobData.salary || "",
+              deadline: jobData.deadline ? jobData.deadline.substring(0, 10) : "", // Format date to YYYY-MM-DD
+              // jobType: jobData.jobType || "Full-time",
+            });
+          } else {
+            setInitialLoadError(data.message || "Failed to load job for editing.");
+            console.error("Error loading job for editing:", data.message);
+          }
+        } catch (err) {
+          console.error("Client-side error loading job for editing:", err);
+          setInitialLoadError("An error occurred while loading job for editing.");
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchJobData();
+    } else {
+      setIsEditing(false);
+      // Reset form if not in edit mode (e.g., navigating from edit back to new post)
+      setFormData({
+        title: "",
+        description: "",
+        location: "",
+        city: "",
+        salary: "",
+        deadline: "",
+        // jobType: "Full-time",
+      });
+    }
+  }, [jobIdToEdit]); // Dependency: re-run when jobIdToEdit changes (e.g., direct URL change)
+
+  // Access control: Only job providers can post/edit jobs
   if (!user || user.role !== "job-provider") {
     return (
       <div
@@ -38,57 +100,85 @@ export default function PostJobPage() {
             <Building2 className="text-danger" size={32} />
           </div>
           <h2 className="h3 fw-bold text-dark mb-3">Access Denied</h2>
-          <p className="text-muted">Only job providers can post jobs.</p>
+          <p className="text-muted">Only job providers can {isEditing ? 'edit' : 'post'} jobs.</p>
         </div>
       </div>
     );
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    // Special handling for salary if it's a number field (ensure it's parsed correctly)
+    if (name === "salary") {
+        setFormData({ ...formData, [name]: value === "" ? "" : parseFloat(value) });
+    } else {
+        setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setInitialLoadError(null); // Clear any previous errors
+
+    // Determine API endpoint and method based on whether we are editing or posting
+    const method = isEditing ? "PUT" : "POST";
+    const url = isEditing ? `/api/jobs/${jobIdToEdit}` : "/api/jobs/post";
+
     try {
-      const res = await fetch("/api/jobs/post", {
-        method: "POST",
+      const res = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
+          // Add authorization token if you have one
         },
         body: JSON.stringify({
           ...formData,
-          provider: user._id, // real user id
+          provider: user._id, // Add provider ID
+          // Convert salary back to string if your backend expects it as string,
+          // otherwise keep as number if you updated schema to Number
+          // For now, assuming backend expects a number if schema is updated to Number
+          salary: parseFloat(formData.salary), // Ensure salary is number when sending
         }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        alert("Job posted successfully!");
-        setFormData({
-          title: "",
-          description: "",
-          location: "",
-          salary: "",
-          deadline: "",
-        });
+        alert(`Job ${isEditing ? 'updated' : 'posted'} successfully!`);
+        // Redirect to posted jobs or clear form
+        router.push("/posted-job");
       } else {
-        alert(data.message || "Something went wrong");
+        setInitialLoadError(data.message || `Failed to ${isEditing ? 'update' : 'post'} job.`);
+        alert(data.message || `Failed to ${isEditing ? 'update' : 'post'} job.`);
       }
     } catch (err) {
       console.error(err);
-      alert("Server error");
+      setInitialLoadError("An error occurred. Please check your network and try again.");
+      alert("An error occurred");
     } finally {
       setLoading(false);
     }
   };
 
+  if (initialLoadError && isEditing && !loading) {
+      return (
+          <>
+              <NavBar />
+              <div className="container py-5 text-center">
+                  <div className="alert alert-danger" role="alert">
+                      Error loading job: {initialLoadError}
+                  </div>
+                  <Link href="/posted-job" className="btn btn-primary mt-3">Back to Posted Jobs</Link>
+              </div>
+          </>
+      );
+  }
+
   return (
     <>
       <Head>
-        <title>Post a Job | Empower Her</title>
+        <title>{isEditing ? 'Edit Job' : 'Post a Job'} | Empower Her</title>
         <link rel="icon" href="/images/mainlogo1.png" type="image/png" />
       </Head>
 
@@ -104,7 +194,7 @@ export default function PostJobPage() {
           background: linear-gradient(90deg, #1976d2, rgba(25, 118, 210, 0.25), #303f9f);
         }
         .gradient-button:hover {
-          background: linear-gradient(90deg, #1565c0, rgba(25, 118, 210, 0.25)", #283593);
+          background: linear-gradient(90deg, #1565c0, rgba(25, 118, 210, 0.25), #283593);
           transform: scale(1.02);
         }
         .glass-effect {
@@ -149,8 +239,7 @@ export default function PostJobPage() {
         <NavBar />
         <div className="container py-5" style={{ maxWidth: "1000px" }}>
           <div className="card glass-effect border-0 shadow-lg rounded-4 overflow-hidden">
-            {/* Hero Section */}
-            {/* <div className="gradient-header text-white text-center py-5 position-relative floating-elements h-10">
+            <div className="gradient-header text-white text-center py-5 position-relative floating-elements">
               <div
                 className="position-absolute top-0 start-0 w-100 h-100"
                 style={{ background: "rgba(0,0,0,0.1)" }}
@@ -165,22 +254,20 @@ export default function PostJobPage() {
                     backdropFilter: "blur(5px)",
                   }}
                 >
-                  <Sparkles className="text-white" size={40} />
+                  {isEditing ? <Edit2 className="text-white" size={40} /> : <Sparkles className="text-white" size={40} />}
                 </div>
-                <h2 className="h1 fw-bold mb-4">Find Your Perfect Candidate</h2>
+                <h2 className="h1 fw-bold mb-4">{isEditing ? 'Edit Job Opening' : 'Post a New Job'}</h2>
                 <p
                   className="lead mx-auto"
                   style={{ maxWidth: "600px", color: "#e3f2fd" }}
                 >
-                  Create a compelling job posting that attracts top talent to
-                  your organization
+                  {isEditing ? 'Update the details of your job listing.' : 'Create a compelling job posting that attracts top talent to your organization.'}
                 </p>
               </div>
-            </div> */}
+            </div>
 
-            {/* Form Section */}
             <div className="card-body p-5">
-              <div>
+              <form onSubmit={handleSubmit}>
                 {/* Job Title */}
                 <div className="mb-4">
                   <label className="form-label fw-semibold text-dark d-flex align-items-center">
@@ -217,19 +304,19 @@ export default function PostJobPage() {
                   />
                 </div>
 
-                {/* Location & Salary Row */}
+                {/* Location & City Row */}
                 <div className="row mb-4">
                   <div className="col-md-6 mb-3 mb-md-0">
                     <label className="form-label fw-semibold text-dark d-flex align-items-center">
                       <MapPin className="text-primary me-2" size={16} />
-                      Location
+                      Location (e.g., Remote, On-site, Hybrid)
                     </label>
                     <input
                       type="text"
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
-                      placeholder="Enter the job area with city"
+                      placeholder="Enter the job location (e.g., Remote, On-site, Hybrid)"
                       required
                       className="form-control form-control-lg bg-light border-2 rounded-4 py-3"
                       style={{ transition: "all 0.3s ease" }}
@@ -238,7 +325,7 @@ export default function PostJobPage() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-dark d-flex align-items-center">
-                      <DollarSign className="text-primary me-2" size={16} />
+                      <MapPin className="text-primary me-2" size={16} />
                       City
                     </label>
                     <input
@@ -246,27 +333,32 @@ export default function PostJobPage() {
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
+                      placeholder="Enter the city (e.g., Bhopal, Mumbai)"
                       required
                       className="form-control form-control-lg bg-light border-2 rounded-4 py-3"
                       style={{ transition: "all 0.3s ease" }}
                     />
                   </div>
                 </div>
-                <div className="mb-5">
+
+                {/* Salary Offered */}
+                <div className="mb-4">
                   <label className="form-label fw-semibold text-dark d-flex align-items-center">
-                    <Calendar className="text-primary me-2" size={16} />
-                    Salary Offered
+                    <DollarSign className="text-primary me-2" size={16} />
+                    Salary Offered (Numerical value, e.g., 50000)
                   </label>
                   <input
-                    type="text"
+                    type="number" // Changed to type="number"
                     name="salary"
                     value={formData.salary}
                     onChange={handleChange}
+                    placeholder="Enter salary (e.g., 50000)"
                     required
                     className="form-control form-control-lg bg-light border-2 rounded-4 py-3"
                     style={{ transition: "all 0.3s ease" }}
                   />
                 </div>
+
                 {/* Application Deadline */}
                 <div className="mb-5">
                   <label className="form-label fw-semibold text-dark d-flex align-items-center">
@@ -286,8 +378,7 @@ export default function PostJobPage() {
 
                 {/* Submit Button */}
                 <button
-                  type="button"
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={loading}
                   className="btn btn-lg w-100 gradient-button text-white fw-semibold py-4 rounded-4 border-0 position-relative overflow-hidden"
                   style={{ transition: "all 0.3s ease", fontSize: "1.1rem" }}
@@ -301,17 +392,17 @@ export default function PostJobPage() {
                         >
                           <span className="visually-hidden">Loading...</span>
                         </div>
-                        Posting Job...
+                        {isEditing ? 'Updating Job...' : 'Posting Job...'}
                       </>
                     ) : (
                       <>
-                        <Briefcase className="me-3" size={20} />
-                        Post Job Opening
+                        {isEditing ? <Edit2 className="me-3" size={20} /> : <Briefcase className="me-3" size={20} />}
+                        {isEditing ? 'Update Job' : 'Post Job Opening'}
                       </>
                     )}
                   </div>
                 </button>
-              </div>
+              </form>
             </div>
           </div>
 
