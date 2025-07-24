@@ -1,0 +1,195 @@
+/* styles/AIChatbot.module.css */
+
+.chatToggleButton {
+  position: fixed;
+  bottom: 20px; /* Distance from bottom */
+  right: 20px; /* Distance from right */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%; /* Makes it circular */
+  background-color: #007bff; /* Primary blue color */
+  color: white;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000; /* Ensure it's above other content */
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.chatToggleButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.chatWindow {
+  position: fixed;
+  bottom: 90px; /* Position above the button */
+  right: 20px; /* Align with the button */
+  width: 320px; /* Width of the chat window */
+  height: 400px; /* Height of the chat window */
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Hide overflow content outside border-radius */
+  z-index: 999; /* Below the button but above page content */
+  animation: fadeIn 0.3s ease-out; /* Simple fade-in animation */
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.chatHeader {
+  background-color: #007bff;
+  color: white;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.chatBody {
+  flex-grow: 1; /* Allows it to take up available space */
+  padding: 15px;
+  overflow-y: auto; /* Enable scrolling for messages */
+  background-color: #f8f9fa; /* Light background for chat body */
+  display: flex; 
+  flex-direction: column;
+  
+  /* --- IMPORTANT FIX FOR SCROLLING --- */
+  min-height: 0; /* Ensures the flex item can shrink and correctly calculate overflow */
+  /* --- Removed justify-content: flex-end; as it can conflict with scroll behavior --- */
+}
+
+.initialMessage {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  margin: auto; /* Center vertically */
+  padding: 20px;
+}
+
+.message {
+  padding: 8px 12px;
+  border-radius: 15px;
+  margin-bottom: 8px;
+  max-width: 80%;
+  word-wrap: break-word; /* Ensure long words break */
+}
+
+.user {
+  align-self: flex-end; /* Align user messages to the right */
+  background-color: #e2f0fe; /* Light blue for user messages */
+  color: #333;
+  border-bottom-right-radius: 2px; /* Slight adjustment for a cleaner look */
+}
+
+.ai {
+  align-self: flex-start; /* Align AI messages to the left */
+  background-color: #e9ecef; /* Light gray for AI messages */
+  color: #333;
+  border-bottom-left-radius: 2px; /* Slight adjustment for a cleaner look */
+}
+
+.chatInputForm {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #dee2e6;
+  background-color: #fff;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.chatInput {
+  flex-grow: 1;
+  border: 1px solid #ced4da;
+  border-radius: 20px;
+  padding: 8px 15px;
+  margin-right: 10px;
+  font-size: 14px;
+}
+
+.chatInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.sendButton {
+  background-color: #28a745; /* Green send button */
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex; /* To center the icon */
+  justify-content: center;
+  align-items: center;
+}
+
+.sendButton:hover {
+  background-color: #218838;
+}
+
+/* Optional: Make it slightly smaller on very small screens */
+@media (max-width: 400px) {
+  .chatWindow {
+    width: 280px;
+    height: 350px;
+    right: 10px;
+    bottom: 80px;
+  }
+  .chatToggleButton {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
+}
+
+/* Typing Indicator Animation */
+.typingIndicator span {
+  animation: blink 1s infinite;
+  display: inline-block; /* Ensures dots are distinct */
+  margin: 0 1px;
+}
+
+.typingIndicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typingIndicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function CentralContentSection() {
   return (
     // Using Bootstrap container and row for layout
-    <div className="container-fluid py-5" style={{ backgroundImage: 'url("/ch2.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '1%' }}>
+    <div className="container-fluid py-3" style={{ backgroundImage: 'url("/ch2.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center', marginTop: '1%' }}>
       <div className="row justify-content-around gy-4"> {/* gy-4 adds vertical gutter for small screens */}
         <div className="col-md-5 d-flex flex-column justify-content-center align-items-center p-4 rounded shadow-lg bg-info bg-opacity-75"> {/* Using Bootstrap bg-info for light blue, bg-opacity for transparency */}
           <h2 className="mb-3 text-center" style={{ fontFamily: 'Georgia, serif' }}>Empower Women to Succeed</h2>

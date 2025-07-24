@@ -7,7 +7,7 @@ export default function CarouselSection() {
   const carouselInnerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0); 
   return (
-    <section className="container-fluid text-center py-5 bg-light rounded shadow mt-4">
+    <section className="container-fluid text-center py-3 bg-light rounded shadow mt-4"> {/* Changed py-5 to py-3 */}
       <h2 className="mb-4" style={{ fontFamily: 'Georgia, serif' }}>Our Satisfied Customers</h2>
 
       {/* Bootstrap Carousel Component */}
@@ -33,14 +33,12 @@ export default function CarouselSection() {
             <Image src="/images/review/4.png" alt="Customer 4" width={800} height={500} className="d-block w-100 mx-auto rounded shadow" style={{ maxHeight: '400px', objectFit: 'contain' }} />
           </div>
         </div>
-        <button className="carousel-control-prev" type="button" data-bs-target="#customerCarousel" data-bs-slide="prev">
-          {/* Change color to white */}
-          <ArrowLeft size={36} color="white" />
+        <button className="carousel-control-prev" type="button" data-bs-target="#customerCarousel" data-bs-slide="prev" style={{ left: '5%' }}>
+          <ArrowLeft size={36} color="black" />
           <span className="visually-hidden">Previous</span>
         </button>
-        <button className="carousel-control-next" type="button" data-bs-target="#customerCarousel" data-bs-slide="next">
-          {/* Change color to white */}
-          <ArrowRight size={36} color="white" />
+        <button className="carousel-control-next" type="button" data-bs-target="#customerCarousel" data-bs-slide="next" style={{ right: '5%' }}>
+          <ArrowRight size={36} color="black" />
           <span className="visually-hidden">Next</span>
         </button>
       </div>

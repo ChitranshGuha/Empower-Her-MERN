@@ -2,6 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import { UserProvider } from '../context/UserContext';
+import AIChatbot from '../components/AIChatbot';
 
 function App({ Component, pageProps }) {
   useEffect(() => {
@@ -11,6 +12,7 @@ function App({ Component, pageProps }) {
   return (
     <UserProvider>
       <Component {...pageProps} />
+      <AIChatbot />
     </UserProvider>
   );
 }
