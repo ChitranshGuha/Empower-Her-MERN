@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-**Empower Her** is a dedicated job posting platform designed with a core mission to empower women in their professional journeys. This platform facilitates connections between job providers and women seeking employment opportunities, fostering a supportive environment for career growth. It includes robust **user authentication** and **role-based access control**, ensuring that registered job providers can post new listings and job seekers can find relevant opportunities.
+**Empower Her** is a dedicated job posting platform designed with a core mission to empower **unemployed and less educated women** in their professional journeys. This platform specifically facilitates connections between job providers and women seeking **low-skill required employment opportunities** such as roles in childcare (e.g., teaching small kids), domestic services (e.g., maid, cook), beauty (e.g., parlour/salon worker), retail (e.g., worker at shops and general stores), laundry services, and similar essential jobs. By fostering a supportive environment focused on accessible career growth, Empower Her aims to simplify the job discovery and application process for this specific demographic. It includes robust **user authentication** and **role-based access control**, ensuring that registered job providers can post new listings and job seekers can find relevant opportunities.
 
 ---
 
@@ -140,8 +140,10 @@ We have ambitious plans to evolve **Empower Her** into an even more powerful and
 * **Job Management Enhancements**: Add functionality for job providers to directly **delete** their job postings.
 * **Rich Application Submissions**: Allow job seekers to **upload resumes and cover letters** during the application process.
 * **Advanced AI Features**:
-    * **AI-Driven Job Generalization**: Utilize AI to optimize job descriptions for providers and present personalized, generalized job options for seekers.
-    * **AI-Powered Job Matching**: Smarter matching of job seekers to relevant roles.
+    * **AI-Driven Job Generalization**:
+        * **For Job Providers**: Utilize AI to analyze and generalize job descriptions, categorizing them into low-skill roles (e.g., "teaching small kids," "maid," "cook," "parlour/salon worker," "shop worker," "laundry person"). This ensures job listings are clear and targeted to the platform's specific audience.
+        * **For Job Seekers**: Leverage AI to interpret user search queries and connect them with these generalized, low-skill job categories, presenting 10-15 relevant options (e.g., if a user searches for "teacher," the AI would connect this to "teaching small kids" roles). This simplifies and accelerates the job discovery process for women with less formal education.
+    * **AI-Powered Job Matching**: Smarter matching of job seekers to relevant roles based on their skills and the generalized job types.
 * **Improved User Experience**:
     * Implement **Pagination / Infinite Scrolling** for job listings and applications for better performance with large datasets.
     * Enhance **Error Handling & Form Validation** with more user-friendly inline feedback and toast notifications.
