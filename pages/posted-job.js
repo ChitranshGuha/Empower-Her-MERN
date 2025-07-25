@@ -38,7 +38,9 @@ export default function PostedJobsPage() {
             if (applicationsRes.ok && Array.isArray(applicationsData.data)) {
               return { ...job, applicants: applicationsData.data };
             } else {
-              return { ...job, applicants: [] };
+              // Log specific error for debugging on server-side
+              console.error(`Failed to fetch applications for job ${job._id}:`, applicationsData.message || 'Unknown error');
+              return { ...job, applicants: [] }; // Return empty array if error
             }
           })
         );
@@ -84,6 +86,7 @@ export default function PostedJobsPage() {
         alert(data.message || 'Failed to update application status.');
       }
     } catch (err) {
+      console.error('Error updating application status:', err); // Added console.error
       alert('An error occurred while updating status.');
     } finally {
       setUpdatingStatus(null);
@@ -144,7 +147,7 @@ export default function PostedJobsPage() {
 
         {!loading && postedJobs.length === 0 && !error && (
           <div className="alert alert-info text-center" role="alert">
-            You haven't posted any jobs yet. <Link href="/post-job">Post a new job</Link> to get started!
+            You haven&apos;t posted any jobs yet. <Link href="/post-job">Post a new job</Link> to get started!
           </div>
         )}
 
@@ -203,10 +206,11 @@ export default function PostedJobsPage() {
                         return (
                           <li key={applicant._id} className="list-group-item d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-2 rounded-3 shadow-sm py-3 px-4">
                             <div className="mb-2 mb-md-0">
-                              <span className="fw-semibold text-dark">{applicant.jobSeeker.name}</span>
+                              {/* Defensive check for jobSeeker data */}
+                              <span className="fw-semibold text-dark">{applicant.jobSeeker?.name || 'Unknown Applicant'}</span>
                               <p className="text-muted small mb-0">
-                                <Mail size={14} className="me-1" /> {applicant.jobSeeker.email}
-                                <span className="ms-3"><Phone size={14} className="me-1" /> {applicant.jobSeeker.phone}</span>
+                                <Mail size={14} className="me-1" /> {applicant.jobSeeker?.email || 'N/A'}
+                                <span className="ms-3"><Phone size={14} className="me-1" /> {applicant.jobSeeker?.phone || 'N/A'}</span>
                               </p>
                               <p className="text-muted small mb-0">Applied: {new Date(applicant.appliedAt).toLocaleDateString('en-GB')}</p>
                             </div>

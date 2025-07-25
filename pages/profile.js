@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import NavBar from "@/components/NavBar";
 import Head from "next/head";
-import {
+import Image from "next/image";
+import { 
   User,
   Mail,
   Phone,
-  Image,
   Briefcase,
   MapPin,
   Sparkles,
@@ -88,8 +88,8 @@ export default function ProfilePage() {
 
       if (res.ok) {
         setUser(data.user);
-        setSelectedFile(null); 
-        setFilePreview(data.user.imageUrl); 
+        setSelectedFile(null);
+        setFilePreview(data.user.imageUrl);
         alert("Profile updated successfully");
       } else {
         alert(data.message || "Update failed");
@@ -256,6 +256,7 @@ export default function ProfilePage() {
                 {/* Profile Picture Upload */}
                 <div className="mb-4">
                   <label className="form-label fw-semibold text-dark d-flex align-items-center">
+                    {/* Changed from Lucide Image icon as we're using Next.js Image directly for preview */}
                     <Image className="text-primary me-2" size={16} />
                     Profile Picture
                   </label>
@@ -272,15 +273,13 @@ export default function ProfilePage() {
                       <p className="text-muted small mb-2">
                         Current/New Profile Picture:
                       </p>
-                      <img
+                      <Image // Changed from <img> to <Image>
                         src={filePreview}
-                        alt="Profile Preview"
+                        alt="Profile Preview" // Added alt prop
+                        width={100} // Added width
+                        height={100} // Added height
                         className="img-thumbnail rounded-circle"
-                        style={{
-                          width: "100px",
-                          height: "100px",
-                          objectFit: "cover",
-                        }}
+                        style={{ objectFit: "cover" }} // Use inline style for objectFit
                       />
                     </div>
                   )}

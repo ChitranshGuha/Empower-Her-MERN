@@ -99,7 +99,7 @@ export default function AppliedJobsPage() {
 
         {!loading && applications.length === 0 && !error && (
           <div className="alert alert-info text-center" role="alert">
-            You haven't applied for any jobs yet. <Link href="/find-jobs">Browse jobs</Link> to get started!
+            You haven&apos;t applied for any jobs yet. <Link href="/find-jobs">Browse jobs</Link> to get started!
           </div>
         )}
 
