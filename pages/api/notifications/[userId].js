@@ -1,4 +1,3 @@
-// pages/api/notifications/[userId].js
 import connectDB from '@/utils/connectDB';
 import Notification from '@/models/Notification';
 import User from '@/models/User';
@@ -7,7 +6,7 @@ export default async function handler(req, res) {
   const { userId } = req.query;
 
   console.log(`API hit: /api/notifications/${userId} with method: ${req.method}`);
-  console.log(`Requested user ID: ${userId}`); // Log the exact userId being used
+  console.log(`Requested user ID: ${userId}`); 
 
   if (req.method === 'GET') {
     if (!userId) {
@@ -24,7 +23,6 @@ export default async function handler(req, res) {
       }
       console.log(`User found in DB for ID: ${userId}`);
 
-      // --- CRITICAL LOGGING HERE ---
       const queryConditions = { recipient: userId };
       console.log('MongoDB find query conditions:', queryConditions);
 
@@ -38,8 +36,6 @@ export default async function handler(req, res) {
         console.log('Recipient ID of first notification:', notifications[0].recipient ? notifications[0].recipient.toString() : 'N/A');
         console.log('isRead status of first notification:', notifications[0].isRead);
       }
-      // --- END CRITICAL LOGGING ---
-
 
       res.status(200).json({ success: true, data: notifications });
     } catch (error) {
@@ -50,7 +46,6 @@ export default async function handler(req, res) {
       res.status(500).json({ success: false, message: 'Server error fetching notifications.' });
     }
   } else if (req.method === 'PUT') {
-    // ... (Your PUT logic for marking as read, ensure it also has logs)
     const { notificationIds, markAllAsRead } = req.body;
 
     try {

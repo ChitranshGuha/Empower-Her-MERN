@@ -1,7 +1,6 @@
-// pages/api/jobs/posted/[providerId].js
 import connectDB from '@/utils/connectDB';
 import Job from '@/models/Job';
-import User from '@/models/User'; // To verify user and role
+import User from '@/models/User';
 
 export default async function handler(req, res) {
   const { providerId } = req.query;
@@ -14,13 +13,11 @@ export default async function handler(req, res) {
     try {
       await connectDB();
 
-      // Optional: Verify if the user exists and is a job-provider
       const user = await User.findById(providerId);
       if (!user || user.role !== 'job-provider') {
         return res.status(403).json({ success: false, message: 'Access denied or user not authorized to view posted jobs.' });
       }
 
-      // Find all jobs where the 'provider' field matches the providerId
       const jobs = await Job.find({ provider: providerId })
                             .sort({ createdAt: -1 })
                             .select('_id title description location city salary deadline providerName createdAt');

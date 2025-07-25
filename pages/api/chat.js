@@ -1,4 +1,3 @@
-// pages/api/chat.js
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default async function handler(req, res) {
@@ -29,9 +28,8 @@ export default async function handler(req, res) {
       },
     });
 
-    let prompt = message; // Default prompt is just the user's message
+    let prompt = message;
 
-    // Construct the prompt with page context if available, and add behavioral instructions
     if (pageContext) {
       prompt = `You are an AI assistant for a website.
       The user interacting with you is already on the website.
@@ -47,7 +45,6 @@ export default async function handler(req, res) {
       ---
       User's question: ${message}`;
     } else {
-      // If no page context, still set the persona and rules
       prompt = `You are an AI assistant for a website.
       The user interacting with you is already on the website.
       DO NOT mention the technology stack (like Next.js, React, Node.js, etc.) used to build this website.

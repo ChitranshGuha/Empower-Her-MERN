@@ -1,4 +1,3 @@
-// pages/api/jobs/post.js
 import connectDB from "@/utils/connectDB";
 import Job from "@/models/Job";
 import User from "@/models/User";
@@ -9,7 +8,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    await connectDB(); // Connect to MongoDB
+    await connectDB();
 
     const { title, description, location, city, salary, deadline, provider } = req.body;
     if (!title || !description || !location || !city || !salary || !deadline || !provider) {

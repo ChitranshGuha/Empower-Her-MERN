@@ -1,8 +1,7 @@
-// pages/api/applications/[applicationId].js (Updated)
 import connectDB from '@/utils/connectDB';
 import Application from '@/models/Application';
-import Notification from '@/models/Notification'; // Import Notification model
-import Job from '@/models/Job'; // To get job title for notification message
+import Notification from '@/models/Notification';
+import Job from '@/models/Job';
 
 export default async function handler(req, res) {
   const { applicationId } = req.query;
@@ -22,14 +21,12 @@ export default async function handler(req, res) {
     try {
       await connectDB();
 
-      // Find the application *before* updating to get jobSeeker and job data
       const application = await Application.findById(applicationId).populate('jobSeeker').populate('job');
 
       if (!application) {
         return res.status(404).json({ message: 'Application not found.' });
       }
 
-      // Check if status actually changed to avoid unnecessary notifications
       if (application.status === status) {
           return res.status(200).json({ message: 'Status already updated.', application: application });
       }
@@ -37,16 +34,14 @@ export default async function handler(req, res) {
       application.status = status;
       await application.save();
 
-      // --- NEW: Create Notification for Job Seeker ---
       const seekerNotification = new Notification({
-        recipient: application.jobSeeker._id, // The job seeker who applied
+        recipient: application.jobSeeker._id,
         type: 'application_status_update',
         message: `Your application for "${application.job.title}" has been updated to "${status}".`,
-        relatedEntity: application._id, // Link to the application
+        relatedEntity: application._id,
         relatedEntityType: 'Application',
       });
       await seekerNotification.save();
-      // --- END NEW ---
 
       res.status(200).json({ message: 'Application status updated successfully!', application: application });
     } catch (error) {

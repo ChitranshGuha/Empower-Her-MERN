@@ -1,15 +1,14 @@
-// pages/job/[jobId].js
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import NavBar from '@/components/NavBar';
 import { useUser } from '@/context/UserContext';
 import Link from 'next/link';
-import { Briefcase, MapPin, DollarSign, Calendar, Building2, User, Mail, Phone } from 'lucide-react';
+import { Briefcase, MapPin, DollarSign, Calendar } from 'lucide-react';
 
 export default function JobDetailsPage() {
   const router = useRouter();
-  const { jobId } = router.query; // Get the job ID from the URL (e.g., /job/65c8a1b2c3d4e5f6a7b8c9d0)
+  const { jobId } = router.query;
   const { user } = useUser();
 
   const [job, setJob] = useState(null);
@@ -20,25 +19,20 @@ export default function JobDetailsPage() {
   const [applyError, setApplyError] = useState(null);
 
   useEffect(() => {
-    // Only fetch if router.query.jobId is available
     if (!jobId) return;
 
     async function fetchJobDetails() {
       try {
         setLoading(true);
-        setError(null); // Clear previous errors
-
-        const res = await fetch(`/api/jobs/${jobId}`); // <-- This calls your API route
+        setError(null);
+        const res = await fetch(`/api/jobs/${jobId}`);
         const data = await res.json();
-
         if (res.ok) {
           setJob(data.data);
         } else {
           setError(data.message || 'Failed to fetch job details.');
-          console.error('API Error:', data.message);
         }
       } catch (err) {
-        console.error('Client-side error fetching job details:', err);
         setError('An error occurred while connecting to the server.');
       } finally {
         setLoading(false);
@@ -46,12 +40,12 @@ export default function JobDetailsPage() {
     }
 
     fetchJobDetails();
-  }, [jobId]); // Dependency array: re-run effect if jobId changes
+  }, [jobId]);
 
   const handleApply = async () => {
     if (!user) {
       alert("Please log in to apply for this job.");
-      router.push('/AuthForm?mode=login'); // Redirect to your login page
+      router.push('/AuthForm?mode=login');
       return;
     }
     if (user.role !== 'job-seeker') {
@@ -64,14 +58,14 @@ export default function JobDetailsPage() {
     setApplyError(null);
 
     try {
-      const res = await fetch('/api/jobs/apply', { // Your API endpoint for applying
+      const res = await fetch('/api/jobs/apply', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           jobId: job._id,
-          jobSeekerId: user._id, // Pass the logged-in user's ID
+          jobSeekerId: user._id,
         }),
       });
 
@@ -84,14 +78,12 @@ export default function JobDetailsPage() {
         setApplyError(data.message || "Failed to submit application.");
       }
     } catch (err) {
-      console.error("Error submitting application:", err);
       setApplyError("An error occurred during application submission.");
     } finally {
       setApplyLoading(false);
     }
   };
 
-  // --- Loading, Error, and Not Found States ---
   if (loading) {
     return (
       <>
@@ -118,7 +110,7 @@ export default function JobDetailsPage() {
     );
   }
 
-  if (!job) { // This handles cases where job is null after loading, e.g., if ID is invalid or not found by API
+  if (!job) {
     return (
       <>
         <NavBar />
@@ -130,7 +122,6 @@ export default function JobDetailsPage() {
     );
   }
 
-  // --- Main Job Details Display ---
   return (
     <>
       <Head>
@@ -176,13 +167,12 @@ export default function JobDetailsPage() {
               </div>
             </div>
 
-            {/* Apply Button Section - Conditional Rendering based on user role/login */}
-            {user && user.role === 'job-seeker' && ( // Only show if user is logged in and is a job seeker
+            {user && user.role === 'job-seeker' && (
               <div className="d-flex justify-content-center mt-4">
                 <button
                   onClick={handleApply}
                   className="btn btn-primary btn-lg rounded-pill px-5 py-3"
-                  disabled={applyLoading || applySuccess} // Disable if applying or already applied successfully
+                  disabled={applyLoading || applySuccess}
                 >
                   {applyLoading ? (
                     <>
@@ -197,18 +187,18 @@ export default function JobDetailsPage() {
                 </button>
               </div>
             )}
-            {!user && ( // Show login prompt if not logged in
-                <div className="text-center mt-4">
-                    <p className="text-muted">Please <Link href="/AuthForm?mode=login">log in</Link> to apply for this job.</p>
-                </div>
+            {!user && (
+              <div className="text-center mt-4">
+                <p className="text-muted">Please <Link href="/AuthForm?mode=login">log in</Link> to apply for this job.</p>
+              </div>
             )}
-            {user && user.role === 'job-provider' && ( // Message for job providers
-                <div className="text-center mt-4">
-                    <p className="text-muted">Job providers cannot apply for jobs.</p>
-                </div>
+            {user && user.role === 'job-provider' && (
+              <div className="text-center mt-4">
+                <p className="text-muted">Job providers cannot apply for jobs.</p>
+              </div>
             )}
 
-            {applyError && ( // Display application error message
+            {applyError && (
               <div className="alert alert-danger mt-3 text-center" role="alert">
                 {applyError}
               </div>

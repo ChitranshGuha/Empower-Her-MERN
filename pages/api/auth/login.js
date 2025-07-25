@@ -1,4 +1,3 @@
-// pages\api\auth\login.js
 import connectDB from '@/utils/connectDB';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';

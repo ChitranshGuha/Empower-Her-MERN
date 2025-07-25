@@ -1,4 +1,3 @@
-// pages/api/notifications/unread/[userId].js
 import connectDB from '@/utils/connectDB';
 import Notification from '@/models/Notification';
 import User from '@/models/User';
@@ -14,20 +13,18 @@ export default async function handler(req, res) {
     try {
       await connectDB();
 
-      // Optional: Verify the user exists
       const user = await User.findById(userId);
       if (!user) {
         console.warn(`Unread count: User ${userId} not found.`); // Add log
         return res.status(404).json({ success: false, message: 'User not found.' });
       }
 
-      // Count unread notifications for the recipient
       const unreadCount = await Notification.countDocuments({
         recipient: userId,
         isRead: false,
       });
 
-      console.log(`Unread count for user ${userId}: ${unreadCount}`); // Add log
+      console.log(`Unread count for user ${userId}: ${unreadCount}`); 
       res.status(200).json({ success: true, count: unreadCount });
     } catch (error) {
       console.error(`Error fetching unread notification count for user ${userId}:`, error);

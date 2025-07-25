@@ -1,4 +1,3 @@
-// models/Application.js
 import mongoose from 'mongoose';
 
 const applicationSchema = new mongoose.Schema({
@@ -12,7 +11,7 @@ const applicationSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  status: { // This is the key field for tracking status
+  status: {
     type: String,
     enum: ['pending', 'reviewed', 'interview', 'rejected', 'hired'],
     default: 'pending',
@@ -21,14 +20,13 @@ const applicationSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  // Add provider field to application for easier querying for providers to see applications
   provider: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
 }, {
-  timestamps: true
+  timestamps: true,
 });
 
 const Application = mongoose.models.Application || mongoose.model('Application', applicationSchema);

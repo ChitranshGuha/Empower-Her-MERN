@@ -30,9 +30,6 @@ export default function ProfilePage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [filePreview, setFilePreview] = useState(user?.imageUrl || null);
 
-  // This useEffect ensures formData and filePreview are updated when the 'user' object from context loads or changes
-  // This is still important to initialize the form correctly when the page loads,
-  // especially if 'user' data arrives asynchronously from localStorage in UserContext.
   useEffect(() => {
     if (user) {
       setFormData({
@@ -59,8 +56,6 @@ export default function ProfilePage() {
       setFilePreview(URL.createObjectURL(file));
     } else {
       setSelectedFile(null);
-      // When file is cleared, revert preview to current user's imageUrl,
-      // which might be an old image or null if they never had one.
       setFilePreview(formData.imageUrl || null);
     }
   };
@@ -72,8 +67,6 @@ export default function ProfilePage() {
     const dataToSend = new FormData();
 
     for (const key in formData) {
-      // Exclude imageUrl from formData as it's handled by selectedFile or updated from backend
-      // Also, ensure only non-null values are appended
       if (formData[key] !== null && key !== "imageUrl") {
         dataToSend.append(key, formData[key]);
       }
@@ -82,7 +75,6 @@ export default function ProfilePage() {
     if (selectedFile) {
       dataToSend.append("profilePicture", selectedFile);
     } else if (formData.imageUrl) {
-      // If no new file is selected but there's an existing imageUrl, send it.
       dataToSend.append("imageUrl", formData.imageUrl);
     }
 
@@ -95,14 +87,9 @@ export default function ProfilePage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Correctly update the user context. This will trigger the UserContext's useEffect to save to localStorage.
         setUser(data.user);
-        // REMOVE THE FOLLOWING LINE:
-        // localStorage.setItem("user", JSON.stringify(data.user)); // <--- REMOVE THIS LINE!!!
-
-        // Update local state for immediate UI reflection and clean up
-        setSelectedFile(null); // Clear selected file from local state
-        setFilePreview(data.user.imageUrl); // Update preview with new URL received from backend
+        setSelectedFile(null); 
+        setFilePreview(data.user.imageUrl); 
         alert("Profile updated successfully");
       } else {
         alert(data.message || "Update failed");

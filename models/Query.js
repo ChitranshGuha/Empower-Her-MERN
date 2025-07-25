@@ -1,4 +1,3 @@
-// models/Query.js
 import mongoose from 'mongoose';
 
 const querySchema = new mongoose.Schema({
@@ -7,7 +6,7 @@ const querySchema = new mongoose.Schema({
   email: { type: String, required: true },
   query: { type: String, required: true },
 }, {
-  timestamps: true // Adds createdAt and updatedAt fields automatically
+  timestamps: true
 });
 
 const Query = mongoose.models.Query || mongoose.model('Query', querySchema);

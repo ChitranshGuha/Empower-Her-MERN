@@ -1,17 +1,16 @@
-// pages/feedback.js
 import Head from 'next/head';
 import NavBar from '@/components/NavBar';
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import { Mail, MessageSquare, Star, Send } from 'lucide-react';
-import StarRating from '@/components/StarRating'; // <--- Import the new StarRating component
+import StarRating from '@/components/StarRating'; 
 
 export default function FeedbackPage() {
   const { user } = useUser();
 
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const [rating, setRating] = useState(0); // Initialize rating as 0 (no stars selected)
+  const [rating, setRating] = useState(0); 
   const [formFeedback, setFormFeedback] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +18,7 @@ export default function FeedbackPage() {
   const userEmail = user ? user.email : '';
   const userId = user ? user._id : null;
 
-  // Handles rating change from StarRating component
+
   const handleRatingChange = (newRating) => {
     setRating(newRating);
   };
@@ -41,7 +40,7 @@ export default function FeedbackPage() {
           userEmail,
           subject,
           message,
-          rating, // Send the selected rating number
+          rating,
         }),
       });
 
@@ -51,7 +50,7 @@ export default function FeedbackPage() {
         setFormFeedback('Thank you for your feedback! It has been submitted successfully. 😊');
         setSubject('');
         setMessage('');
-        setRating(0); // Reset rating to 0 after submission
+        setRating(0);
       } else {
         setFormFeedback(data.message || 'Failed to submit feedback. Please try again. 😢');
       }
@@ -120,8 +119,8 @@ export default function FeedbackPage() {
                   <Star size={16} className="me-2 text-primary" /> Overall Rating
                 </label>
                 <StarRating
-                  initialRating={rating} // Pass current rating to component
-                  onRatingChange={handleRatingChange} // Receive new rating from component
+                  initialRating={rating} 
+                  onRatingChange={handleRatingChange} 
                 />
               </div>
 

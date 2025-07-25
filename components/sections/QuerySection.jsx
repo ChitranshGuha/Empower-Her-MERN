@@ -1,4 +1,3 @@
-// components/sections/QuerySection.jsx
 import { useState } from 'react'; 
 import Image from "next/image"; 
 
@@ -45,14 +44,13 @@ export default function QuerySection() {
   return (
     <div className="container-fluid py-4" id="section7" style={{ backgroundColor: '#d9faff', marginTop: '20px' }}>
       <div className="row align-items-center justify-content-center">
-        {/* Changed p-2 to p-0 for no padding, added a custom class for image display */}
         <div className="col-md-5 text-center mb-4 mb-md-0 p-0"> 
           <Image
             src="/images/queryimg.png"
             alt="Query Image"
-            width={320} // Further reduced width
-            height={250} // Further reduced height proportionally
-            className="img-fluid d-block mx-auto" // Added d-block and mx-auto for better centering and display behavior
+            width={320}
+            height={250}
+            className="img-fluid d-block mx-auto" 
           />
         </div>
         <div className="col-md-5 p-4"> 

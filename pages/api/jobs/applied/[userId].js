@@ -1,10 +1,9 @@
-// pages/api/jobs/applied/[userId].js
 import connectDB from '@/utils/connectDB';
 import Application from '@/models/Application';
-import User from '@/models/User'; // To verify user and role
+import User from '@/models/User';
 
 export default async function handler(req, res) {
-  const { userId } = req.query; // Get userId from the URL query
+  const { userId } = req.query;
 
   if (req.method === 'GET') {
     if (!userId) {
@@ -14,21 +13,18 @@ export default async function handler(req, res) {
     try {
       await connectDB();
 
-      // Optional: Verify if the user exists and is a job-seeker
       const user = await User.findById(userId);
       if (!user || user.role !== 'job-seeker') {
         return res.status(403).json({ success: false, message: 'Access denied or user not found.' });
       }
 
-      // Find all applications for the given jobSeekerId
-      // Use .populate('job') to get the job details directly (only '_id' is stored in Application)
       const applications = await Application.find({ jobSeeker: userId })
                                             .populate({
                                                 path: 'job',
-                                                select: '_id title providerName' // Only get the necessary job fields
+                                                select: '_id title providerName'
                                             })
-                                            .select('job status appliedAt') // Select fields from Application model
-                                            .lean(); // Convert Mongoose documents to plain JavaScript objects
+                                            .select('job status appliedAt')
+                                            .lean();
 
       res.status(200).json({ success: true, data: applications });
     } catch (error) {

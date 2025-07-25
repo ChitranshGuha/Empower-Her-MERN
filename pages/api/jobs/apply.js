@@ -1,4 +1,3 @@
-// pages/api/jobs/apply.js
 import connectDB from '@/utils/connectDB';
 import Application from '@/models/Application';
 import Job from '@/models/Job';
@@ -43,15 +42,16 @@ export default async function handler(req, res) {
     });
 
     await newApplication.save();
+
     const providerNotification = new Notification({
-      recipient: job.provider, 
+      recipient: job.provider,
       type: 'new_applicant',
       message: `New applicant for your job: "${job.title}" from ${jobSeeker.name}.`,
-      relatedEntity: newApplication._id, 
+      relatedEntity: newApplication._id,
       relatedEntityType: 'Application',
     });
+
     await providerNotification.save();
-    // --- END NEW ---
 
     res.status(201).json({ message: 'Application submitted successfully!', application: newApplication });
   } catch (error) {

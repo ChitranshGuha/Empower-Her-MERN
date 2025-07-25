@@ -1,10 +1,9 @@
-// pages/applied-jobs.js
 import Head from 'next/head';
 import NavBar from '@/components/NavBar';
 import { useState, useEffect } from 'react';
 import { useUser } from '@/context/UserContext';
 import Link from 'next/link';
-import { Briefcase, MapPin, DollarSign, Calendar, Building2, Clock, CheckCircle, XCircle } from 'lucide-react'; // Icons for status
+import { Briefcase, MapPin, DollarSign, Calendar, Building2, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 export default function AppliedJobsPage() {
   const { user } = useUser();
@@ -16,13 +15,12 @@ export default function AppliedJobsPage() {
     async function fetchAppliedJobs() {
       if (!user || user.role !== 'job-seeker') {
         setLoading(false);
-        return; // Handled by access denial below
+        return;
       }
 
       try {
         setLoading(true);
         setError(null);
-        // Call the API route created in the previous step
         const res = await fetch(`/api/jobs/applied/${user._id}`);
         const data = await res.json();
 
@@ -32,7 +30,6 @@ export default function AppliedJobsPage() {
           setError(data.message || 'Failed to fetch applied jobs.');
         }
       } catch (err) {
-        console.error('Client-side error fetching applied jobs:', err);
         setError('An error occurred while connecting to the server.');
       } finally {
         setLoading(false);
@@ -40,9 +37,8 @@ export default function AppliedJobsPage() {
     }
 
     fetchAppliedJobs();
-  }, [user]); // Re-fetch applications if user changes (e.g., login/logout)
+  }, [user]);
 
-  // Function to get status color and icon
   const getStatusDisplay = (status) => {
     switch (status) {
       case 'pending':
@@ -50,7 +46,7 @@ export default function AppliedJobsPage() {
       case 'reviewed':
         return { text: 'text-info', icon: <Briefcase size={18} className="me-2" /> };
       case 'interview':
-        return { text: 'text-primary', icon: <User size={18} className="me-2" /> };
+        return { text: 'text-primary', icon: <Briefcase size={18} className="me-2" /> };
       case 'hired':
         return { text: 'text-success', icon: <CheckCircle size={18} className="me-2" /> };
       case 'rejected':
@@ -60,7 +56,6 @@ export default function AppliedJobsPage() {
     }
   };
 
-  // Restrict access to job seekers
   if (!user || user.role !== 'job-seeker') {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -111,18 +106,14 @@ export default function AppliedJobsPage() {
         <div className="row row-cols-1 g-4">
           {applications.map((app) => {
             const statusDisplay = getStatusDisplay(app.status);
-            // Ensure job object is not null/undefined from populate
-            if (!app.job) {
-                console.warn('Application found without a linked job:', app);
-                return null; // Skip rendering if job data is missing
-            }
+            if (!app.job) return null;
 
             return (
               <div key={app._id} className="col">
                 <div className="card h-100 shadow-sm border-0 rounded-4 p-4">
                   <div className="card-body">
                     <h5 className="card-title fw-bold text-primary mb-2">
-                        {app.job.title}
+                      {app.job.title}
                     </h5>
                     <h6 className="card-subtitle mb-3 text-muted small">
                       Application ID: {app._id}
@@ -138,18 +129,14 @@ export default function AppliedJobsPage() {
                       <li className="d-flex align-items-center">
                         {statusDisplay.icon}
                         Status: <span className={`ms-1 fw-bold ${statusDisplay.text}`}>
-                                  {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
-                                </span>
+                          {app.status.charAt(0).toUpperCase() + app.status.slice(1)}
+                        </span>
                       </li>
                     </ul>
                     <div className="d-flex justify-content-end mt-3">
                       <Link href={`/job/${app.job._id}`} className="btn btn-outline-primary btn-sm rounded-pill px-3">
                         View Job Details
                       </Link>
-                      {/* You could add a button to withdraw application here */}
-                      {/* {app.status === 'pending' && (
-                          <button className="btn btn-outline-danger btn-sm rounded-pill px-3 ms-2">Withdraw</button>
-                      )} */}
                     </div>
                   </div>
                 </div>

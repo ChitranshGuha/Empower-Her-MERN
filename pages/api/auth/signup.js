@@ -1,4 +1,3 @@
-// D:\Projects\2.Working\Empower Her Revamp\project\pages\api\auth\signup.js
 import connectDB from '@/utils/connectDB';
 import User from '@/models/User';
 import bcrypt from 'bcryptjs';

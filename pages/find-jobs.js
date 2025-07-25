@@ -1,4 +1,3 @@
-// pages/find-jobs.js
 import Head from 'next/head';
 import NavBar from '@/components/NavBar';
 import { useState, useEffect, useCallback } from 'react';
@@ -11,16 +10,14 @@ export default function FindJobsPage() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [appliedJobIds, setAppliedJobIds] = useState(new Set()); // Store IDs of jobs user has applied to
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
 
-  // --- Filter States ---
+
   const [filterTitle, setFilterTitle] = useState('');
   const [filterLocation, setFilterLocation] = useState('');
   const [filterCity, setFilterCity] = useState('');
   const [filterMinSalary, setFilterMinSalary] = useState('');
-  // --- End Filter States ---
 
-  // Function to fetch jobs based on filters
   const fetchJobs = useCallback(async () => {
     try {
       setLoading(true);
@@ -56,21 +53,20 @@ export default function FindJobsPage() {
     }
   }, [filterTitle, filterLocation, filterCity, filterMinSalary]);
 
-  // Function to fetch user's applied jobs
+
   const fetchAppliedJobs = useCallback(async () => {
     if (!user || user.role !== 'job-seeker') {
-      setAppliedJobIds(new Set()); // Clear if not a job seeker or not logged in
+      setAppliedJobIds(new Set()); 
       return;
     }
 
     try {
-      // Assuming you'll create an API route like /api/jobs/applied/[userId]
+      
       const res = await fetch(`/api/jobs/applied/${user._id}`);
       const data = await res.json();
 
       if (res.ok && Array.isArray(data.data)) {
-        // Create a Set of job IDs for quick lookup
-        const ids = new Set(data.data.map(app => app.job._id || app.job)); // Handle if 'job' is an object or just ID
+        const ids = new Set(data.data.map(app => app.job._id || app.job));
         setAppliedJobIds(ids);
       } else {
         console.error('Failed to fetch applied jobs:', data.message || 'Unknown error');
@@ -80,13 +76,11 @@ export default function FindJobsPage() {
       console.error('Client-side error fetching applied jobs:', err);
       setAppliedJobIds(new Set());
     }
-  }, [user]); // Dependency on user to refetch if user changes (e.g., login/logout)
-
-  // Combined useEffect to fetch both jobs and applied jobs
+  }, [user]); 
   useEffect(() => {
     fetchJobs();
     fetchAppliedJobs();
-  }, [fetchJobs, fetchAppliedJobs]); // Re-run if fetch functions change
+  }, [fetchJobs, fetchAppliedJobs]);
 
   const handleClearFilters = () => {
     setFilterTitle('');
@@ -95,7 +89,7 @@ export default function FindJobsPage() {
     setFilterMinSalary('');
   };
 
-  // Optional: Restrict access to job seekers if needed
+  
   if (!user || user.role !== 'job-seeker') {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -219,7 +213,7 @@ export default function FindJobsPage() {
 
         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
           {jobs.map((job) => {
-            const hasApplied = appliedJobIds.has(job._id); // Check if user has applied to this job
+            const hasApplied = appliedJobIds.has(job._id); 
 
             return (
               <div key={job._id} className="col">

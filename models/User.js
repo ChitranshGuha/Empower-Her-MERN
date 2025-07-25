@@ -1,4 +1,3 @@
-// D:\Projects\2.Working\Empower Her Revamp\project\models\User.js
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({

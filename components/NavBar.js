@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react"; // Import useCallback
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useUser } from "../context/UserContext";
 import Image from "next/image";
@@ -12,15 +12,13 @@ const playfair = Playfair_Display({
 });
 
 function NavBar() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const router = useRouter();
-  const { setUser } = useUser();
-  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0); // New state for unread count
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
-  // Function to fetch unread notification count
   const fetchUnreadCount = useCallback(async () => {
     if (!user || !user._id) {
-      setUnreadNotificationsCount(0); // Reset if no user or user ID
+      setUnreadNotificationsCount(0);
       return;
     }
     try {
@@ -36,14 +34,13 @@ function NavBar() {
       console.error('Client-side error fetching unread count:', err);
       setUnreadNotificationsCount(0);
     }
-  }, [user]); // Dependency on user: re-fetch if user object changes
+  }, [user]);
 
   useEffect(() => {
     fetchUnreadCount();
-    // Optional: Poll for new notifications periodically
-    const interval = setInterval(fetchUnreadCount, 15000); // Poll every 15 seconds
-    return () => clearInterval(interval); // Clean up interval on unmount
-  }, [fetchUnreadCount]); // Dependency on memoized fetchUnreadCount
+    const interval = setInterval(fetchUnreadCount, 15000);
+    return () => clearInterval(interval);
+  }, [fetchUnreadCount]);
 
   const renderActionButton = () => {
     if (!user) return null;
@@ -89,6 +86,7 @@ function NavBar() {
         </>
       );
     }
+
     return null;
   };
 
@@ -101,31 +99,12 @@ function NavBar() {
   const bellIconSrc = unreadNotificationsCount > 0 ? "/images/belliconUpdate.png" : "/images/bellicon.png";
 
   return (
-    <nav
-      style={{ backgroundColor: "#a6f3ff" }}
-      className="navbar navbar-expand-lg"
-    >
-      <Head>
-        {/*
-          IMPORTANT: Do not load stylesheets using next/head here.
-          If this is for Material Symbols Outlined, use @next/font/google in _app.js
-          or import the CSS globally in _app.js.
-          This line can cause warnings/errors as per previous discussions.
-        */}
-        {/* <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" /> */}
-      </Head>
+    <nav style={{ backgroundColor: "#a6f3ff" }} className="navbar navbar-expand-lg">
+      <Head></Head>
 
       <Link href="/" className="navbar-brand ml-2 d-flex align-items-center">
-        <Image
-          src="/images/mainlogo1.png"
-          alt="Company Logo"
-          width={50}
-          height={50}
-        />
-        <span
-          className={`ml-2 ${playfair.className}`}
-          style={{ color: "#333", fontSize: "25px" }}
-        >
+        <Image src="/images/mainlogo1.png" alt="Company Logo" width={50} height={50} />
+        <span className={`ml-2 ${playfair.className}`} style={{ color: "#333", fontSize: "25px" }}>
           Empower Her
         </span>
       </Link>
@@ -134,22 +113,12 @@ function NavBar() {
         <ul className="navbar-nav d-flex align-items-center">
           <li className="nav-item">
             <Link href="/feedback" className="nav-link">
-              <Image
-                src="/images/feedback.jpg"
-                alt="Feedback"
-                width={45}
-                height={45}
-              />
+              <Image src="/images/feedback.jpg" alt="Feedback" width={45} height={45} />
             </Link>
           </li>
-          <li className="nav-item position-relative"> {/* Added position-relative for badge positioning */}
+          <li className="nav-item position-relative">
             <Link href="/notification" className="nav-link">
-              <Image
-                src={bellIconSrc} // Use conditional source
-                alt="Notification"
-                width={45}
-                height={45}
-              />
+              <Image src={bellIconSrc} alt="Notification" width={45} height={45} />
               {unreadNotificationsCount > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                   {unreadNotificationsCount}
@@ -186,7 +155,7 @@ function NavBar() {
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle d-flex align-items-center user-icon"
-                data-toggle="dropdown" // Note: Bootstrap 5 uses data-bs-toggle="dropdown"
+                data-toggle="dropdown"
                 href="#"
                 style={{ cursor: "pointer" }}
               >
@@ -200,7 +169,7 @@ function NavBar() {
                   />
                 ) : (
                   <span
-                    className="material-symbols-outlined" // Ensure Material Symbols font is loaded globally (e.g., in _app.js)
+                    className="material-symbols-outlined"
                     style={{
                       fontSize: "32px",
                       marginRight: "4px",

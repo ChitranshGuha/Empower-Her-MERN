@@ -1,19 +1,18 @@
-// models/Feedback.js
 import mongoose from 'mongoose';
 
 const feedbackSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: false, // Optional: if feedback can be anonymous
+    required: false,
   },
   userName: {
     type: String,
-    required: false, // Optional: if feedback can be anonymous, store name if user is logged in
+    required: false,
   },
   userEmail: {
     type: String,
-    required: false, // Optional: if feedback can be anonymous, store email if user is logged in
+    required: false,
   },
   subject: {
     type: String,
@@ -25,19 +24,19 @@ const feedbackSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  rating: { // Optional: if you want a rating system (e.g., 1-5 stars)
+  rating: {
     type: Number,
     min: 1,
     max: 5,
     required: false,
   },
-  status: { // Optional: to track if feedback has been reviewed
+  status: {
     type: String,
     enum: ['new', 'reviewed', 'archived'],
     default: 'new',
   },
 }, {
-  timestamps: true // Adds createdAt and updatedAt fields
+  timestamps: true,
 });
 
 const Feedback = mongoose.models.Feedback || mongoose.model('Feedback', feedbackSchema);

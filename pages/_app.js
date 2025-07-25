@@ -1,4 +1,3 @@
-// pages/_app.js
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useEffect } from 'react';
 import { UserProvider } from '../context/UserContext';

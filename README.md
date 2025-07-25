@@ -165,6 +165,20 @@ Contributions are welcome! If you'd like to contribute to Empower Her, please fo
 
 ---
 
+## Testing Credentials
+
+Use the following pre-configured test accounts to explore the features of **Empower Her** without registering a new account:
+
+### Job Provider
+- **Phone:** `12345`  
+- **Password:** `12345`
+
+###  Job Seeker
+- **Phone:** `1234`  
+- **Password:** `1234`
+
+---
+
 ## License
 
 (Consider adding a license, e.g., MIT, Apache 2.0. You can choose one from [Choose an Open Source License](https://choosealicense.com/).)
