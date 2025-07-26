@@ -1,12 +1,11 @@
+// pages/post-job.js
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import {
   Briefcase,
   MapPin,
-  DollarSign,
   Calendar,
   FileText,
-  Landmark,
   Building2,
   Sparkles,
   Edit2
@@ -16,6 +15,7 @@ import { useUser } from "@/context/UserContext";
 import Head from "next/head";
 import Link from "next/link";
 import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+
 export default function PostJobPage() {
   const router = useRouter();
   const { edit: jobIdToEdit } = router.query;
@@ -51,7 +51,7 @@ export default function PostJobPage() {
               description: jobData.description || "",
               location: jobData.location || "",
               city: jobData.city || "",
-              salary: jobData.salary || "",
+              salary: jobData.salary !== undefined && jobData.salary !== null ? String(jobData.salary) : "",
               deadline: jobData.deadline ? jobData.deadline.substring(0, 10) : "",
             });
           } else {
@@ -105,11 +105,7 @@ export default function PostJobPage() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "salary") {
-      setFormData({ ...formData, [name]: value === "" ? "" : parseFloat(value) });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -129,7 +125,7 @@ export default function PostJobPage() {
         body: JSON.stringify({
           ...formData,
           provider: user._id,
-          salary: parseFloat(formData.salary),
+          salary: formData.salary === "" ? "" : parseFloat(formData.salary),
         }),
       });
 
@@ -290,14 +286,14 @@ export default function PostJobPage() {
                   <div className="col-md-6 mb-3 mb-md-0">
                     <label className="form-label fw-semibold text-dark d-flex align-items-center">
                       <MapPin className="text-primary me-2" size={16} />
-                      Location (e.g., Remote, On-site, Hybrid)
+                      Location
                     </label>
                     <input
                       type="text"
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
-                      placeholder="Enter the job location (e.g., Remote, On-site, Hybrid)"
+                      placeholder="Enter the job location"
                       required
                       className="form-control form-control-lg bg-light border-2 rounded-4 py-3"
                       style={{ transition: "all 0.3s ease" }}
@@ -306,7 +302,7 @@ export default function PostJobPage() {
 
                   <div className="col-md-6">
                     <label className="form-label fw-semibold text-dark d-flex align-items-center">
-                      <Landmark className="text-primary me-2" size={16} />
+                      <MapPin className="text-primary me-2" size={16} />
                       City
                     </label>
                     <input
@@ -325,14 +321,14 @@ export default function PostJobPage() {
                 <div className="mb-4">
                   <label className="form-label fw-semibold text-dark d-flex align-items-center">
                     <CurrencyRupeeIcon className="text-primary me-2" fontSize="small" />
-                    Salary Offered (Numerical value, e.g., ₹50000)
+                    Salary Offered (Numerical value, e.g., ₹5000)
                   </label>
                   <input
                     type="number"
                     name="salary"
                     value={formData.salary}
                     onChange={handleChange}
-                    placeholder="Enter salary (e.g., 50000)"
+                    placeholder="Enter salary (e.g., 5000)"
                     required
                     className="form-control form-control-lg bg-light border-2 rounded-4 py-3"
                     style={{ transition: "all 0.3s ease" }}
@@ -401,9 +397,12 @@ export default function PostJobPage() {
                       <span className="text-primary fw-semibold small">1</span>
                     </div>
                     <div>
-                      <h5 className="fw-semibold text-dark mb-1">Be Specific</h5>
+                      <h5 className="fw-semibold text-dark mb-1">
+                        Be Specific
+                      </h5>
                       <p className="text-muted small mb-0">
-                        Include specific skills, experience level, and day-to-day responsibilities.
+                        Include specific skills, experience level, and
+                        day-to-day responsibilities.
                       </p>
                     </div>
                   </div>
@@ -419,12 +418,20 @@ export default function PostJobPage() {
                         background: "rgba(123, 31, 162, 0.1)",
                       }}
                     >
-                      <span className="fw-semibold small" style={{ color: "#7b1fa2" }}>2</span>
+                      <span
+                        className="fw-semibold small"
+                        style={{ color: "#7b1fa2" }}
+                      >
+                        2
+                      </span>
                     </div>
                     <div>
-                      <h5 className="fw-semibold text-dark mb-1">Highlight Benefits</h5>
+                      <h5 className="fw-semibold text-dark mb-1">
+                        Highlight Benefits
+                      </h5>
                       <p className="text-muted small mb-0">
-                        Mention company culture, growth opportunities, and unique perks.
+                        Mention company culture, growth opportunities, and
+                        unique perks.
                       </p>
                     </div>
                   </div>

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Playfair_Display } from "next/font/google";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { User as UserIcon, Briefcase, MapPin, DollarSign, Calendar, Building2, Search, Filter } from 'lucide-react'; // Using UserIcon to avoid conflict with 'user' variable
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -86,7 +87,6 @@ function NavBar() {
         </>
       );
     }
-
     return null;
   };
 
@@ -100,7 +100,8 @@ function NavBar() {
 
   return (
     <nav style={{ backgroundColor: "#a6f3ff" }} className="navbar navbar-expand-lg">
-      <Head></Head>
+      <Head>
+      </Head>
 
       <Link href="/" className="navbar-brand ml-2 d-flex align-items-center">
         <Image src="/images/mainlogo1.png" alt="Company Logo" width={50} height={50} />
@@ -117,7 +118,7 @@ function NavBar() {
             </Link>
           </li>
           <li className="nav-item position-relative">
-            <Link href="/notification" className="nav-link">
+            <Link href="/notifications" className="nav-link">
               <Image src={bellIconSrc} alt="Notification" width={45} height={45} />
               {unreadNotificationsCount > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
@@ -155,8 +156,10 @@ function NavBar() {
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle d-flex align-items-center user-icon"
-                data-toggle="dropdown"
+                data-bs-toggle="dropdown" 
                 href="#"
+                role="button"
+                aria-expanded="false" 
                 style={{ cursor: "pointer" }}
               >
                 {user.imageUrl ? (
@@ -168,19 +171,17 @@ function NavBar() {
                     className="rounded-circle user-avatar"
                   />
                 ) : (
-                  <span
-                    className="material-symbols-outlined"
+                  <UserIcon 
+                    size={32}
+                    className="me-1"
                     style={{
-                      fontSize: "32px",
-                      marginRight: "4px",
                       transition: "transform 0.3s",
+                      color: "#333" 
                     }}
-                  >
-                    account_circle
-                  </span>
+                  />
                 )}
               </a>
-              <div className="dropdown-menu dropdown-menu-right">
+              <div className="dropdown-menu dropdown-menu-end">
                 <Link href="/profile" className="dropdown-item">
                   Edit Profile
                 </Link>
@@ -194,9 +195,13 @@ function NavBar() {
       </div>
 
       <style jsx>{`
-        .user-icon:hover span {
+        .user-icon:hover span { /* This applies to the old Material Symbols icon */
           transform: scale(1.2);
           color: #000;
+        }
+        .user-icon:hover svg { /* New rule for Lucide SVG icon */
+          transform: scale(1.2);
+          color: #000; /* Adjust hover color if needed */
         }
         .user-avatar:hover {
           transform: scale(1.1);
