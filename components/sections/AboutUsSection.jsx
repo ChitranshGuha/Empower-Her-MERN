@@ -1,23 +1,16 @@
-// components/sections/AboutUsSection.jsx
-import Image from "next/image"; // Keep Image import for other potential uses, or if you decide to use a different image here later
-
+import Image from "next/image"; 
 export default function AboutUsSection() {
   return (
     <div className="container-fluid about-container d-flex flex-column flex-md-row justify-content-center align-items-center py-5"
          style={{ backgroundImage: 'url("/images/backg.jpeg")', backgroundSize: 'cover', backgroundPosition: 'center', minHeight: '75vh', position: 'relative' }}>
-
-      {/* This overlay creates the gradient effect, fading TO WHITE from RIGHT TO LEFT */}
-      {/* It starts 80% opaque white on the RIGHT and goes to transparent on the LEFT. */}
-      {/* This will make the RIGHT side of the section (and the image showing through it) whiter, */}
-      {/* while the LEFT side (where text is) remains clear. */}
       <div className="position-absolute top-0 start-0 w-100 h-100"
            style={{
              background: 'linear-gradient(to left, rgba(255, 255, 255, 0),rgba(255, 255, 255, 0.6))',
-             zIndex: 1 // Ensure this is above the background image, but below content
+             zIndex: 1 
            }}>
       </div>
 
-      <div className="row w-100 justify-content-center align-items-center" style={{ zIndex: 2 }}> {/* zIndex 2 for content to be above gradient */}
+      <div className="row w-100 justify-content-center align-items-center" style={{ zIndex: 2 }}>
         <div className="col-md-6 p-4 about-content text-dark">
           <h2 className="mb-3 text-dark fw-bold" style={{ fontFamily: 'Georgia, serif', fontSize: '2.5em' }}>About Us</h2>
           <p className="lead mb-3 text-dark fw-medium" style={{ fontFamily: 'Arial, sans-serif' }}>
@@ -28,12 +21,6 @@ export default function AboutUsSection() {
           </p>
         </div>
         <div className="col-md-6 about-image">
-          {/*
-            REMOVED THE DUPLICATE <Image> COMPONENT FROM HERE.
-            The background for the entire section is now handled by the `backgroundImage` style on the parent div.
-            This column now primarily serves as a layout placeholder, allowing the background to show through.
-          */}
-          {/* <Image src="/images/backg.jpeg" alt="About Us" fill style={{ objectFit: 'cover' }} className="rounded shadow" /> */}
         </div>
       </div>
     </div>
