@@ -118,7 +118,7 @@ function NavBar() {
             </Link>
           </li>
           <li className="nav-item position-relative">
-            <Link href="/notifications" className="nav-link">
+            <Link href="/notification" className="nav-link">
               <Image src={bellIconSrc} alt="Notification" width={45} height={45} />
               {unreadNotificationsCount > 0 && (
                 <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
